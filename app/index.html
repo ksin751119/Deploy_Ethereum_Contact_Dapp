@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Deploy_Ethereum_Contact_Dapp</title>
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+
+  </head>
+  <body>
+    <!--[if IE]>
+      <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+
+    <div class="hero-unit">
+      <h1>Deploy Your Smart Contract on Ethereum</h1>
+    </div>
+
+    <div class="hero-unit-content">
+      <!-- setup  -->
+      <div class="sidekick">
+        <h1>Setup</h1>
+        <p class='notready' id='connect_status'>Not connected</p>
+        <span>Provider</span>
+        <span><input type='text' id='provider_url' value='http://localhost:8545'></span>
+        <span>
+          <button onclick="doConnect()">Connect</button>
+        </span>
+        <br>
+        <span>
+          <button onclick="doGetNodeStatus()">Node Status</button>
+        </span>
+        <span id="get_peer_count" class="notready">...</span>
+      </div>
+      <!-- version -->
+      <div class="sidekick">
+        <h1>Version</h1>
+        <pre id='version_information'></pre>
+      </div>
+
+
+  <!-- Accounts -->
+      <!-- accounts list -->
+    <div class="sidekick">
+      <h1>Accounts</h1>
+      <h2><span>Count: </span><span class='notready' id='accounts_count'>...</span></h2>
+      <h2><span>Coinbase: </span></h2><span class='notready' id='coinbase'>...</span>
+      <h2><span>Default Account: </span></h2><span class='notready' id='defaultAccount'>...</span>
+      <h2><span><button onclick="doGetAccounts()">Get Accounts</button></span></h2>
+    </div>
+    <!-- account balances -->
+    <div class="sidekick">
+      <h1>Balances</h1>
+      <ol id="account_balances_list">
+        <!-- This is where the accounts balances will be added -->
+      </ol>
+    </div>
+
+
+    <!-- unlock the account -->
+    <div class="sidekick">
+      <h1>Unlock Account</h1>
+      <span>To</span>
+      <span><select id="select_to_unlock_account"></select></span>
+    <br>
+    <span>Password</span><input id="unlock_account_password" type="text" value="password" />
+    <br>
+    <span><button onclick="doUnlockAccount()">UnLock Account</button>
+    </span>
+    <span><button onclick="doLockAccount()">Lock Account</button>
+    </span>
+  </div>
+  <div class="sidekick">
+    <h1>Un/Lock Result</h1>
+    <p class="notready" id="lock_unlock_result">...</p>
+  </div>
+
+    </div>
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/utils.js"></script>
+    <!-- endbuild -->
+  </body>
+</html>
