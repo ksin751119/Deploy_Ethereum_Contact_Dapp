@@ -2,6 +2,8 @@
 var autoRetrieveFlag = false;
 var     nodeType = 'geth';
 var accounts;
+var compiler;
+var optimize = 1;
 
 /**
  * Get the version information for Web3
@@ -78,6 +80,7 @@ function    startApp(){
 
     // no action to be taken if this flag is OFF
     // during development for convinience you may set autoRetrieveFlag=true
+    doGetCompilers();
     if(!autoRetrieveFlag)  return;
 
 
@@ -89,7 +92,10 @@ function    startApp(){
     // Compilation is available only for TestRPC
     // Geth 1.6 and above does not support compilation
     // MetaMask does not support compilation
-    //doGetCompilers();
+    doGetCompilers();
+
+
+
 }
 
 function doConnect()    {
@@ -204,6 +210,7 @@ function    doUnlockAccount()  {
 
     setData('lock_unlock_result','...',true);
     var account = document.getElementById('select_to_unlock_account').value;
+    console.log(account);
     var password = document.getElementById('unlock_account_password').value;
 
     // synchronous flavor
@@ -252,6 +259,115 @@ function    doLockAccount() {
         } else {
             var str = account.substring(0,20)+'...Locked';
             setData('lock_unlock_result',str,false);
+        }
+    });
+}
+
+
+/**
+ * Gets the list of compilers
+ */
+function doGetCompilers()  {
+  BrowserSolc.getVersions(function(soljsonSources, soljsonReleases) {
+  addCompileVersionsToSelects(soljsonReleases);
+  /*for (var i = 0; i < Object.keys(soljsonReleases).length; i++) {
+    var compilerVersion = soljsonReleases[_.keys(soljsonReleases)[i]];
+    //console.log(compilerVersion);
+    addOptionToSelect('select_to_compile_version', compilerVersion);
+  }*/
+
+  });
+}
+
+
+/**
+ * Starting geth 1.6 - Solidity compilation is not allowed from
+ * web3 JSON/RPC
+ */
+
+function    doCompileSolidityContract()  {
+
+
+
+    console.log(document.getElementById('select_to_compile_version'));
+    var compilerVersion = document.getElementById('select_to_compile_version').value;
+
+    //console.log(source);
+    window.BrowserSolc.loadVersion(compilerVersion, function(c) {
+      compiler = c;
+      console.log("Solc Version Loaded: " + compilerVersion);
+
+      var source = document.getElementById('sourcecode').value;
+      var result = compiler.compile(source, optimize);
+
+      if(result.errors && JSON.stringify(result.errors).match(/error/i)){
+
+        console.log(result.errors);
+        setData('compilation_result',result.errors,true);
+      } else {
+        var thisMap = _.sortBy(_.map(result.contracts, function(val,key) {
+          // ugly mapsort in react
+            return [key,val];
+          }), function(val) {
+            return -1*parseFloat(val[1].bytecode);
+          });
+
+        console.debug(thisMap);
+        var abi = JSON.parse(thisMap[0][1].interface);
+        var bytecode = "0x" + thisMap[0][1].bytecode;
+        document.getElementById('compiled_bytecode').value=bytecode;
+        document.getElementById('compiled_abidefinition').value=JSON.stringify(abi);
+        setData('compilation_result',"Compile Succussed",false);
+      }
+      });
+}
+
+
+/**
+ * Deploys the contract - ASYNCH
+ */
+
+function    doDeployContract()   {
+    // Reset the deployment results UI
+    resetDeploymentResultUI();
+
+    var     abiDefinitionString = document.getElementById('compiled_abidefinition').value;
+    var     abiDefinition = JSON.parse(abiDefinitionString);
+
+    var     bytecode = document.getElementById('compiled_bytecode').value;
+
+    // 1. Create the contract object
+    var  contract = web3.eth.contract(abiDefinition);
+
+    // Get the estimated gas
+    var   gas = document.getElementById('deployment_estimatedgas').value;
+
+    // 2. Create the params for deployment - all other params are optional, uses default
+    var  params = {
+        from: web3.eth.coinbase,
+        data: bytecode,
+        gas: gas
+    }
+    console.log(params);
+
+    // 3. This is where the contract gets deployed
+    // Callback method gets called *2*
+    // First time : Result = Txn Hash
+    // Second time: Result = Contract Address
+    var constructor_param = 10;
+
+    contract.new(constructor_param,params,function(error,result){
+
+        if(error){
+            setData('contracttransactionhash','Deployment Failed: '+error,true);
+        } else {
+            console.log('RECV:',result)
+            if(result.address){
+                document.getElementById('contractaddress').value=result.address;
+            } else {
+                // gets set in the first call
+                setData('contracttransactionhash',result.transactionHash, false);
+            }
         }
     });
 }

@@ -18,6 +18,7 @@ function    setUIBasedOnNodeType(){
         setData('lock_unlock_result','--',false);
     }
     // Compiler options
+    /*
     if(nodeType === 'geth' || nodeType === 'metamask'){
         // Not supported for geth & metamask
         setData('list_of_compilers','getCompilers ( ) & compileSolidity ( ) not supported for '+nodeType,true);
@@ -30,7 +31,11 @@ function    setUIBasedOnNodeType(){
         setData('list_of_compilers','--',false);
         document.getElementById('button_do_compile').disabled = false;
         document.getElementById('sourcecode').disabled=false;
-    }
+    }*/
+
+    setData('list_of_compilers','--',false);
+    document.getElementById('button_do_compile').disabled = false;
+    document.getElementById('sourcecode').disabled=false;
 
     // This simply creates the JSON for default transaction object
     //generateTransactionJSON();
@@ -102,6 +107,18 @@ function    addAccountsToSelects(accounts){
     }
 }
 
+
+/**
+ * This populates all <SELECT> boxes with accounts
+ */
+function    addCompileVersionsToSelects(soljsonReleases){
+    removeAllChildItems('select_to_compile_version');
+    for (var i = 0; i < Object.keys(soljsonReleases).length; i++) {
+      var compilerVersion = soljsonReleases[_.keys(soljsonReleases)[i]];
+      addOptionToSelect('select_to_compile_version', compilerVersion, compilerVersion);
+}
+}
+
 /**
  * Add options to a <select>
  */
@@ -117,4 +134,12 @@ function    addOptionToSelect(selectId, text, value){
     // option = document.createElement('OPTION');
     // option.text=text
     // select.appendChild(option)
+}
+
+
+/**
+ * Reset the deployment result UI
+ */
+function    resetDeploymentResultUI(){
+    console.log('utils.resetDeploymentResultUI() TO BE CODED')
 }

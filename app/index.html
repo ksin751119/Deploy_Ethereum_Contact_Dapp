@@ -88,7 +88,64 @@
     <p class="notready" id="lock_unlock_result">...</p>
   </div>
 
+
+  <!-- compilers list -->
+  <div class="sidekick">
+      <h1>Compile</h1>
+      <span id="list_of_compilers" class="notready">...</span>
+      <span><select id="select_to_compile_version"></select></span>
+      <br>
+      <button id="button_do_compile" onclick="doCompileSolidityContract()">Compile Code</button><br>
+      <textarea id="sourcecode" cols="45" rows="10">
+        pragma solidity ^0.4.6;
+        contract MyContract {
+
+          uint   num;
+
+          event NumberSetEvent(address indexed caller, bytes32 indexed oldNum, bytes32 indexed newNum);
+
+           function getNum()  returns (uint n) {
+             return num;
+          }
+
+           function setNum(uint n) {
+              uint old = num;
+              num=n;
+              NumberSetEvent(msg.sender,bytes32(old),bytes32(num));
+           }
+
+           function MyContract(uint x){num=x;}
+        }
+      </textarea>
     </div>
+    <!-- compilation result -->
+    <div class="sidekick">
+      <h1>Result</h1>
+      <span class='notready' id='compilation_result'>...</span>
+      <br><span>Bytecode</span>
+      <br><textarea id="compiled_bytecode" cols="40" rows="3"></textarea>
+      <!-- ABI Definition -->
+      <br><span>ABI Definitions</span>
+      <br><textarea id="compiled_abidefinition" cols="40" rows="3"></textarea>
+    </div>
+    <!-- deploy the contract -->
+    <div class="sidekick">
+      <h1>Deploy</h1>
+      <p>Gas (Wei)
+        <input type="text" id="deployment_estimatedgas" size="10" value="4700000" /></p>
+      <button onclick="doDeployContract()">Deploy Contract</button><br>
+    </div>
+    <!-- deploy result -->
+    <div class="sidekick">
+      <h1>Result</h1>
+      <p>Transaction Hash</p>
+      <p id="contracttransactionhash" class="notready">...</p>
+      <p>Contract Address</p>
+      <input id="contractaddress" class="ready" size="40" value="">
+      <a href="" id="contractaddress_link" target="_blank"></a>
+      <br>
+    </div>
+  </div>
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
@@ -98,6 +155,9 @@
     <!-- build:js scripts/main.js -->
     <script src="scripts/main.js"></script>
     <script src="scripts/utils.js"></script>
+    <!-- Include this in your HTML page -->
+    <script src="http://code.dappbench.com/browser-solc.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/0.10.0/lodash.min.js"></script>
     <!-- endbuild -->
   </body>
 </html>
